@@ -1,0 +1,11 @@
+en:
+  welcome: |
+    Hi! I can help with handling your receipts.
+    Please, send me the receipt, I'll parse it and send back to you.
+  receipt_confirmation: Great! Start processing the receipt.
+  receipt_result: |
+    Here is you receipt:
+    Seller: %{seller}.
+    Total sum: %{total_sum}.
+    Date: %{date}.
+  general_error: Failed to parse the receipt content.

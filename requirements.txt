@@ -1,0 +1,6 @@
+wheel
+pyTelegramBotAPI
+python-decouple
+requests
+pydantic
+python-i18n[YAML]

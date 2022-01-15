@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+  bot:
+    container_name: receipt-bot
+    build: .
+    restart: unless-stopped
+    env_file: .secrets
