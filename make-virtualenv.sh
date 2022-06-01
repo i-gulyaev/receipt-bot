@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VENV_DIR=venv
-PYTHON=python3.8
+PYTHON=python3
 
 if [[ ! -d venv ]]; then
     echo "Installing virtual environment"

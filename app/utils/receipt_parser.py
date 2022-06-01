@@ -1,4 +1,5 @@
 from datetime import datetime
+from hashlib import sha256
 from typing import Any, Dict
 
 from app.schemas import Receipt, ReceiptItem
@@ -19,11 +20,19 @@ def __parse_receipt_v1(
     seller = data["user"]
     total_sum = int(data["totalSum"]) / 100.0
     date = datetime.strptime(data["localDateTime"], "%Y-%m-%dT%H:%M")
+
+    h = sha256()
+    h.update(seller.encode())
+    h.update(str(data["totalSum"]).encode())
+    h.update(str(date.timestamp()).encode)
+    id = h.hexdigest()
+
     items = []
     for item in data["items"]:
         items.append(__parse_item(item))
 
     return Receipt(
+        id=id,
         seller=seller,
         total_sum=total_sum,
         date=date,
@@ -34,15 +43,17 @@ def __parse_receipt_v1(
 def __parse_receipt_v2(
     data: Any,
 ) -> Receipt:
+    id = data[0]["id"]
     seller = data[0]["seller"]["name"]
     total_sum = int(data[0]["query"]["sum"]) / 100.0
-    date = data[0]["query"]["date"]
+    date = datetime.strptime(data[0]["query"]["date"], "%Y-%m-%dT%H:%M")
     items = []
 
     for item in data[0]["ticket"]["document"]["receipt"]["items"]:
         items.append(__parse_item(item))
 
     return Receipt(
+        id=id,
         seller=seller,
         total_sum=total_sum,
         date=date,

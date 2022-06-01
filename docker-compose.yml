@@ -6,3 +6,15 @@ services:
     build: .
     restart: unless-stopped
     env_file: .secrets
+  db:
+    image: mongo
+    container_name: mongodb
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./data:/data/db
+      - ./raw_data:/raw_data
+    ports:
+      - 27017:27017
+    restart: unless-stopped

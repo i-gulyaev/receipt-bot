@@ -2,5 +2,6 @@ wheel
 pyTelegramBotAPI
 python-decouple
 requests
+pymongo
 pydantic
 python-i18n[YAML]

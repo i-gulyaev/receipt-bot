@@ -7,6 +7,7 @@ from telebot import TeleBot
 from telebot import logger as tb_logger
 from telebot import types
 
+from app.db import Connector, create_document
 from app.schemas import Receipt, ReceiptItem
 from app.settings import settings
 from app.utils import parse_receipt
@@ -49,7 +50,7 @@ def format_messages(
     return result
 
 
-def process_receipt(bot: TeleBot, message: types.Message):
+def process_receipt(bot: TeleBot, message: types.Message, connector: Connector):
     assert message.document
     try:
         file_info = bot.get_file(message.document.file_id)
@@ -58,6 +59,9 @@ def process_receipt(bot: TeleBot, message: types.Message):
         content = json.loads(content)
         logger.debug(f"Get file={file_info}, content={content}")
         receipt = parse_receipt(content)
+
+        doc = create_document(receipt=receipt, data=content)
+        connector.add_document(doc)
 
         bot.send_message(
             message.chat.id,
@@ -84,6 +88,12 @@ if __name__ == "__main__":
         num_threads=settings.NUM_THREADS,
     )
 
+    connector = Connector(
+        uri=settings.DB_URI,
+        name=settings.DB_NAME,
+        collection=settings.DB_COLLECTION,
+    )
+
     @bot.message_handler(commands=["start", "help"])
     def handle_start_command(message: types.Message):
         logger.debug(f"Got message: {message}")
@@ -99,6 +109,6 @@ if __name__ == "__main__":
             message,
             i18n.t("bot.receipt_confirmation"),
         )
-        process_receipt(bot, message)
+        process_receipt(bot, message, connector)
 
     bot.infinity_polling()

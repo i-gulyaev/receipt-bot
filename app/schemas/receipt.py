@@ -12,6 +12,7 @@ class ReceiptItem(BaseModel):
 
 
 class Receipt(BaseModel):
+    id: str
     seller: str
     total_sum: float
     date: datetime.datetime
