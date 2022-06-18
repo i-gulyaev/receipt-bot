@@ -1,16 +1,18 @@
 import json
 import logging
-from typing import List
+from typing import Any, Dict, List
 
 import i18n
+from goodsclf.classifier import GoodsClassifier
+from receipt_parser import parse_receipt
 from telebot import TeleBot
 from telebot import logger as tb_logger
 from telebot import types
 
 from app.db import Connector, create_document
-from app.schemas import Receipt, ReceiptItem
 from app.settings import settings
-from app.utils import parse_receipt
+
+# from app.utils import parse_receipt
 
 logger = tb_logger
 tb_logger.setLevel(logging.DEBUG)
@@ -22,21 +24,28 @@ i18n.set("fallback", "en")
 MAX_MESSAGE_SIZE = 4096
 
 
-def stringify_item(date, item: ReceiptItem) -> str:
-    name = item.name.replace(";", ".")
-    return f"{date};unknown;{name};{item.total_sum}"
+def stringify_item(date, item: Dict[str, Any], label) -> str:
+    name = item["name"].replace(";", ".")
+    item_sum = item["sum"]
+    return f"{date};{label};{name};{item_sum}"
 
 
 def format_messages(
-    receipt: Receipt,
+    receipt: Dict[str, Any],
+    clf: GoodsClassifier,
     message_size: int = MAX_MESSAGE_SIZE,
 ) -> List[str]:
     result = []
-    date = receipt.date.strftime("%Y-%m-%d")
+    date = receipt["date"].strftime("%Y-%m-%d")
 
     message = ""
 
-    items = [stringify_item(date, item) for item in receipt.items]
+    item_names = [item["name"] for item in receipt["items"]]
+
+    items = [
+        stringify_item(date, item, label)
+        for item, label in zip(receipt["items"], clf.predict(item_names))
+    ]
 
     for item in items:
         if (len(message) + len(item) + 1) > message_size:
@@ -50,7 +59,12 @@ def format_messages(
     return result
 
 
-def process_receipt(bot: TeleBot, message: types.Message, connector: Connector):
+def process_receipt(
+    bot: TeleBot,
+    message: types.Message,
+    connector: Connector,
+    clf: GoodsClassifier,
+):
     assert message.document
     try:
         file_info = bot.get_file(message.document.file_id)
@@ -67,13 +81,13 @@ def process_receipt(bot: TeleBot, message: types.Message, connector: Connector):
             message.chat.id,
             i18n.t(
                 "bot.receipt_result",
-                seller=receipt.seller,
-                total_sum=receipt.total_sum,
-                date=receipt.date,
+                seller=receipt["seller"],
+                total_sum=receipt["sum"],
+                date=receipt["date"],
             ),
         )
 
-        for msg in format_messages(receipt):
+        for msg in format_messages(receipt, clf):
             bot.send_message(message.chat.id, msg)
 
     except Exception as error:
@@ -94,6 +108,8 @@ if __name__ == "__main__":
         collection=settings.DB_COLLECTION,
     )
 
+    clf = GoodsClassifier().load()
+
     @bot.message_handler(commands=["start", "help"])
     def handle_start_command(message: types.Message):
         logger.debug(f"Got message: {message}")
@@ -109,6 +125,6 @@ if __name__ == "__main__":
             message,
             i18n.t("bot.receipt_confirmation"),
         )
-        process_receipt(bot, message, connector)
+        process_receipt(bot, message, connector, clf)
 
     bot.infinity_polling()
