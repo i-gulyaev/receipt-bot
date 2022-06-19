@@ -7,6 +7,10 @@ services:
     build: .
     restart: unless-stopped
     env_file: .secrets
+    environment:
+      - DB_URI=mongodb://db:27017
+      - DB_NAME=receipt
+      - DB_COLLECTION=receipts
   db:
     image: mongo:4.4.14
     container_name: mongodb

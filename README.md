@@ -12,3 +12,11 @@ with the list of items in given receipt to the client.
    docker-compose build
    docker-compose up -d
    ```
+
+## DB migration
+
+```sh
+docker-compose exec -T db sh -c 'mongodump --archive' > db.dump
+
+docker-compose exec -T db sh -c 'mongorestore --archive' < db.dump
+```
