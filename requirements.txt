@@ -1,9 +1,0 @@
-git+https://github.com/i-gulyaev/receipt-parser@main
-git+https://github.com/i-gulyaev/goodsclf.git@main
-wheel
-pyTelegramBotAPI
-python-decouple
-requests
-pymongo
-pydantic
-python-i18n[YAML]

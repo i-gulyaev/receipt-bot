@@ -1,0 +1,3 @@
+include src/receipt_bot/i18n/bot.en.yml
+include src/receipt_bot/i18n/bot.ru.yml
+include src/receipt_bot/.env

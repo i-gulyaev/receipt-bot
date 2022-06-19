@@ -1,5 +1,6 @@
 import json
 import logging
+import pathlib
 from typing import Any, Dict, List
 
 import i18n
@@ -9,15 +10,16 @@ from telebot import TeleBot
 from telebot import logger as tb_logger
 from telebot import types
 
-from app.db import Connector, create_document
-from app.settings import settings
-
-# from app.utils import parse_receipt
+from .db import Connector
+from .settings import settings
+from .util import create_document
 
 logger = tb_logger
 tb_logger.setLevel(logging.DEBUG)
 
-i18n.load_path.append(settings.I18N_PATH)
+here = pathlib.Path(__file__).parent.resolve()
+
+i18n.load_path.append(here / "i18n")
 i18n.set("locale", "ru")
 i18n.set("fallback", "en")
 

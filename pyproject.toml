@@ -1,0 +1,44 @@
+[build-system]
+# These are the assumed default build requirements from pip:
+# https://pip.pypa.io/en/stable/reference/pip/#pep-517-and-518-support
+requires = ["setuptools>=43.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name="receipt_bot"
+version="0.0.1"
+description="Receipt Telegram Bot"
+readme = "README.md"
+authors = [
+        {name="IG", email="igor.s.gulyaev@gmail.com"},
+        ]        
+
+dependencies = [
+    "receipt-parser @ git+https://github.com/i-gulyaev/receipt-parser@main",
+    "goodsclf @ git+https://github.com/i-gulyaev/goodsclf@main",
+    "pyTelegramBotAPI",
+    "python-decouple",
+    "requests",
+    "pymongo",
+    "pydantic",
+    "python-i18n[YAML]"
+    ]
+
+[tool.black]
+line-length = 79
+skip-string-normalization = true
+target-version = ['py37', 'py38', 'py39', 'py310']
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | \venv
+  | \.pytest_cache
+  | dist
+  | build
+  | docs
+)/
+'''

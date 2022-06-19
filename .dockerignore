@@ -1,1 +1,8 @@
+build
 data
+dist
+raw_data
+static
+venv
+*.egg-info
+*~

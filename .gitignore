@@ -1,8 +1,14 @@
 *#
 *~
+.*
+*.egg-info
+dist
+build
 __pycache__
 *.pyc
 .venv
 venv
 .secrets
 data
+data
+raw_data
