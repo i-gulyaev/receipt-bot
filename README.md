@@ -1,7 +1,10 @@
-# receipt-bot
+[![Build and test](https://github.com/i-gulyaev/receipt-bot/actions/workflows/ci-tests.yml/badge.svg?branch=main&event=push)](https://github.com/i-gulyaev/receipt-bot/actions/workflows/ci-tests.yml)
+
+
+# Receipt Telegram Bot
 
 The `receipt-bot` is a Telegram bot that is capable to receive receipts as JSON files and to respond
-with the list of items in given receipt to the client.
+with the list of categorized items in given receipt to the client.
 
 ## Usage
 
