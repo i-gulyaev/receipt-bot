@@ -12,7 +12,7 @@ from telebot import types
 
 from .db import Connector
 from .settings import settings
-from .util import create_document, format_messages, stringify_item
+from .util import create_document, format_messages
 
 logger = tb_logger
 tb_logger.setLevel(logging.DEBUG)
