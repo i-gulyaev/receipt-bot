@@ -10,8 +10,11 @@ with the list of categorized items in given receipt to the client.
 
 1. Register bot in Telegram.
 2. Place API token to `.secrets` file.
+   ```sh
+   echo "API_TOKEN=<telegram bot token>" >> .secrets
+    ```
 3. Run bot with docker-compose:
-   ```
+   ```sh
    docker-compose build
    docker-compose up -d
    ```
