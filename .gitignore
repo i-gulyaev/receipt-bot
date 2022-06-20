@@ -5,6 +5,7 @@ dist
 build
 __pycache__
 *.pyc
+.tox
 .venv
 venv
 .secrets

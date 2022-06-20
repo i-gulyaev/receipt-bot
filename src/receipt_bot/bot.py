@@ -12,7 +12,7 @@ from telebot import types
 
 from .db import Connector
 from .settings import settings
-from .util import create_document
+from .util import create_document, format_messages, stringify_item
 
 logger = tb_logger
 tb_logger.setLevel(logging.DEBUG)
@@ -26,39 +26,9 @@ i18n.set("fallback", "en")
 MAX_MESSAGE_SIZE = 4096
 
 
-def stringify_item(date, item: Dict[str, Any], label) -> str:
-    name = item["name"].replace(";", ".")
-    item_sum = item["sum"]
-    return f"{date};{label};{name};{item_sum}"
-
-
-def format_messages(
-    receipt: Dict[str, Any],
-    clf: GoodsClassifier,
-    message_size: int = MAX_MESSAGE_SIZE,
-) -> List[str]:
-    result = []
-    date = receipt["date"].strftime("%Y-%m-%d")
-
-    message = ""
-
+def classify_items(clf: GoodsClassifier, receipt: Dict[str, Any]) -> List[str]:
     item_names = [item["name"] for item in receipt["items"]]
-
-    items = [
-        stringify_item(date, item, label)
-        for item, label in zip(receipt["items"], clf.predict(item_names))
-    ]
-
-    for item in items:
-        if (len(message) + len(item) + 1) > message_size:
-            result.append(message)
-            message = ""
-        message += item + "\n"
-
-    if message:
-        result.append(message)
-
-    return result
+    return clf.predict(item_names)
 
 
 def process_receipt(
@@ -89,7 +59,8 @@ def process_receipt(
             ),
         )
 
-        for msg in format_messages(receipt, clf):
+        labels = classify_items(clf)
+        for msg in format_messages(receipt, labels):
             bot.send_message(message.chat.id, msg)
 
     except Exception as error:
