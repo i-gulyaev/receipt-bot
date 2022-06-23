@@ -59,8 +59,8 @@ def process_receipt(
             ),
         )
 
-        labels = classify_items(clf)
-        for msg in format_messages(receipt, labels):
+        labels = classify_items(clf, receipt)
+        for msg in format_messages(receipt, labels, MAX_MESSAGE_SIZE):
             bot.send_message(message.chat.id, msg)
 
     except Exception as error:
